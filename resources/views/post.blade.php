@@ -21,7 +21,7 @@
                         <h5 class="mb-0">{{ $comment->user->name }}</h5>
                         <p class="mb-0">{{ $comment->body }}</p>
                         <small>
-                            <a onclick="like(event, {{ $comment->id }}, {{ $post->id }})" href="#" class="like">{{ $comment->likes }} {{ $comment->likes != 1 ? 'likes' : 'like' }}</a>
+                            asdas
                         </small>
                     </div>
                 @empty

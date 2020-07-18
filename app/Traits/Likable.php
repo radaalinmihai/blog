@@ -5,17 +5,26 @@ namespace App\Traits;
 
 
 use App\Like;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 trait Likable
 {
-    public function like()
+    public function scopeWithLikes(Builder $query)
     {
-        return dd(request()->all());
+        $query->leftJoinSub(
+            'select comment_id, sum(liked) likes, sum(!liked) dislikes from likes group by id',
+            'likes',
+            'likes.comment_id',
+            'comments.id'
+        );
+    }
+
+    public function like($id, $user_id)
+    {
         Like::updateOrCreate([
-            'user_id' => Auth::id()
+            'user_id' => $user_id,
+            'comment_id' => $id
         ], [
-            'user_id' => Auth::id(),
             'liked' => true
         ]);
     }
