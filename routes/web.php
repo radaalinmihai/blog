@@ -22,4 +22,6 @@ Auth::routes();
 Route::get('/create', 'PostController@create')->name('create');
 Route::post('/', 'PostController@store');
 Route::post('/comment', 'CommentController@create');
-Route::patch('/comment/like/{id}', 'CommentController@like');
+
+Route::post('/comment/{id}/like', 'CommentController@like');
+Route::delete('/comment/{id}/dislike', 'CommentController@dislike');

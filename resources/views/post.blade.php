@@ -20,9 +20,12 @@
                     <div class="mb-2">
                         <h5 class="mb-0">{{ $comment->user->name }}</h5>
                         <p class="mb-0">{{ $comment->body }}</p>
-                        <small>
-                            asdas
-                        </small>
+                        <div class="flex-row">
+                            <a href="#" onclick="like(event, {{ $comment->id }}, {{ $post->id }})">Like</a>
+                            {{ $comment->likes ?: 0 }}
+                            <a href="#" onclick="dislike(event, {{ $comment->id }}, {{ $post->id }})">Dislike</a>
+                            {{ $comment->dislikes ?: 0 }}
+                        </div>
                     </div>
                 @empty
                     <p>This post has no comments</p>
@@ -47,22 +50,30 @@
     <script>
         function like(event, id, post_id) {
             event.preventDefault();
-            let button = event.target;
             let data = new FormData();
             data.append('_token', '{{ Session::token() }}');
-            data.append('_method', 'PATCH');
             data.append('id', id);
             data.append('post_id', post_id);
-            fetch('/comment/like/' + id, {
+            fetch('/comment/' + id + '/like', {
                 method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                },
                 body: data
             }).then(function(res) {
-                return res.json();
-            }).then(function(res) {
-                if(parseInt(res) != 1)
-                    button.innerText = res + " likes";
-                else
-                    button.innerText = res + ' like';
+                console.log(res);
+            })
+        }
+        function dislike(event, id, post_id) {
+            event.preventDefault();
+            let data = new FormData();
+            data.append('_token', '{{ Session::token() }}');
+            data.append('_method', 'DELETE');
+            data.append('id', id);
+            data.append('post_id', post_id);
+            fetch('/comment/' + id + '/dislike', {
+                method: 'POST',
+                body: data
             });
         }
     </script>

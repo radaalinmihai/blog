@@ -6,6 +6,7 @@ namespace App\Traits;
 
 use App\Like;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 trait Likable
 {
@@ -19,14 +20,19 @@ trait Likable
         );
     }
 
-    public function like($id, $user_id)
+    public function like($id, $liked = true)
     {
         Like::updateOrCreate([
-            'user_id' => $user_id,
+            'user_id' => Auth::id(),
             'comment_id' => $id
         ], [
-            'liked' => true
+            'liked' => $liked
         ]);
+    }
+
+    public function dislike($id)
+    {
+        return $this->like($id, false);
     }
 
     public function likes()
