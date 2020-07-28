@@ -20,11 +20,10 @@
                     <div class="mb-2">
                         <h5 class="mb-0">{{ $comment->user->name }}</h5>
                         <p class="mb-0">{{ $comment->body }}</p>
-                        <div class="flex-row">
-                            <a href="#" onclick="like(event, {{ $comment->id }}, {{ $post->id }})">Like</a>
-                            {{ $comment->likes ?: 0 }}
-                            <a href="#" onclick="dislike(event, {{ $comment->id }}, {{ $post->id }})">Dislike</a>
-                            {{ $comment->dislikes ?: 0 }}
+                        <div class="d-flex likes-container">
+                            <span onclick="like(event, {{ $comment->id }}, {{ $post->id }})" class="like {{ $comment->isLiked($comment->id) ? 'text-primary' : 'text-dark' }} material-icons">thumb_up</span>
+                            <span class="likes">{{ $comment->likes ?: 0 }}</span>
+                            <span onclick="dislike(event, {{ $comment->id }}, {{ $post->id }})" class="dislike {{ !$comment->isLiked($comment->id) ? 'text-primary' : 'text-dark' }} material-icons">thumb_down</span>
                         </div>
                     </div>
                 @empty
@@ -56,14 +55,18 @@
             data.append('post_id', post_id);
             fetch('/comment/' + id + '/like', {
                 method: 'POST',
-                headers: {
-                    'Accept': 'application/json'
-                },
                 body: data
-            }).then(function(res) {
-                console.log(res);
-            })
+            }).then(function() {
+                let likes = document.getElementsByClassName('likes')[id - 1],
+                    dislikeButton = document.getElementsByClassName('dislike')[id - 1];
+                event.target.classList.add('text-primary');
+                event.target.classList.remove('text-dark');
+                likes.innerText = parseInt(likes.innerText) + 1;
+                dislikeButton.classList.add('text-dark');
+                dislikeButton.classList.remove('text-primary');
+            });
         }
+
         function dislike(event, id, post_id) {
             event.preventDefault();
             let data = new FormData();
@@ -74,6 +77,14 @@
             fetch('/comment/' + id + '/dislike', {
                 method: 'POST',
                 body: data
+            }).then(function() {
+                let likes = document.getElementsByClassName('likes')[id - 1],
+                    likeButton = document.getElementsByClassName('like')[id - 1];
+                event.target.classList.add('text-primary');
+                event.target.classList.remove('text-dark');
+                likes.innerText = parseInt(likes.innerText) - 1;
+                likeButton.classList.add('text-dark');
+                likeButton.classList.remove('text-primary');
             });
         }
     </script>

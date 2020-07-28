@@ -5,6 +5,7 @@ namespace App\Traits;
 
 
 use App\Like;
+use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,12 +23,20 @@ trait Likable
 
     public function like($id, $liked = true)
     {
-        Like::updateOrCreate([
+        return Like::updateOrCreate([
             'user_id' => Auth::id(),
             'comment_id' => $id
         ], [
             'liked' => $liked
         ]);
+    }
+
+    public function isLiked($id)
+    {
+        return Like::where([
+            'user_id' => Auth::id(),
+            'comment_id' => $id
+        ])->get()->first()->liked === 1;
     }
 
     public function dislike($id)

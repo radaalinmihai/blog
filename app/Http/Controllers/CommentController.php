@@ -24,14 +24,12 @@ class CommentController extends Controller
 
     public function like(Comment $comment)
     {
-        $comment->like(request()->id);
-        return ['liked' => true];
+        return $comment->like(request()->id);
     }
 
     public function dislike(Comment $comment)
     {
-        $comment->dislike(request()->id);
-        return ['liked' => false];
+        return $comment->dislike(request()->id);
     }
 
     protected function validateComment()
