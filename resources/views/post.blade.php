@@ -5,10 +5,37 @@
         <div class="card-body">
             <div class="d-flex flex-row justify-content-between">
                 <h5 class="card-title">{{ $post->title }}</h5>
-                <section class="d-flex flex-row">
-                    <span role="button" class="material-icons">create</span>
-                    <span type="button" role="button" class="material-icons" data-toggle="modal" data-target="#deletePost">delete</span>
-                </section>
+                @auth
+                    @if($post->user_id === auth()->user()->id)
+                        <section class="d-flex flex-row">
+                            <span role="button" class="material-icons">create</span>
+                            <span type="button" role="button" class="material-icons" data-toggle="modal" data-target="#deletePost">delete</span>
+                        </section>
+                        <div class="modal fade" id="deletePost" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLongTitle">Delete this post</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span class="material-icons" aria-hidden="true">close</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this post? This actions is not reversable.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                        <form action="/post/{{ $post->id }}/delete" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">Yes</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endauth
             </div>
             <h6 class="card-subtitle mb-2 text-muted">{{ $post->user->name }}</h6>
             <p class="card-text">{{ $post->body }}</p>
@@ -27,9 +54,11 @@
                         <h5 class="mb-0">{{ $comment->user->name }}</h5>
                         <p class="mb-0">{{ $comment->body }}</p>
                         <div class="d-flex likes-container">
-                            <span data-id-comment="{{ $comment->id }}" class="like {{ $comment->isLiked($comment->id) ? 'text-primary' : 'text-dark' }} material-icons">thumb_up</span>
-                            <span class="likes">{{ $comment->likes ?: 0 }}</span>
-                            <span data-id-comment="{{ $comment->id }}" class="dislike {{ $comment->isDisliked($comment->id) ? 'text-primary' : 'text-dark' }} material-icons">thumb_down</span>
+                            @auth
+                                <span role="button" data-id-comment="{{ $comment->id }}" class="like {{ $comment->isLiked($comment->id) ? 'text-primary' : 'text-dark' }} material-icons">thumb_up</span>
+                                <span role="button" data-id-comment="{{ $comment->id }}" class="dislike {{ $comment->isDisliked($comment->id) ? 'text-primary' : 'text-dark' }} material-icons">thumb_down</span>
+                            @endauth
+                            <span class="@guest text-primary @endguest likes">Likes {{ $comment->likes ?: 0 }}</span>
                         </div>
                     </div>
                 @empty
@@ -46,29 +75,6 @@
                         <button type="submit" class="btn btn-primary">Comment</button>
                     </form>
                 @endauth
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="deletePost" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Delete this post</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this post? This actions is not reversable.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                    <form action="/post/{{ $post->id }}/delete" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-primary">Yes</button>
-                    </form>
-                </div>
             </div>
         </div>
     </div>

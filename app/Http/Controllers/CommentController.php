@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Comment;
-use App\Like;
 use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
@@ -24,7 +23,7 @@ class CommentController extends Controller
 
     public function like($id, Comment $comment)
     {
-        return $comment->like($id);
+        $comment->like($id);
     }
 
     public function dislike(Comment $comment)
