@@ -41,7 +41,8 @@ class PostController extends Controller
 
     public function destroy()
     {
-        //
+        Post::where('id', request()->id)->delete();
+        return redirect('/');
     }
 
     protected function validatePost()

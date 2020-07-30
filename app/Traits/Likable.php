@@ -4,6 +4,7 @@
 namespace App\Traits;
 
 
+use App\Comment;
 use App\Like;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,17 +32,19 @@ trait Likable
         ]);
     }
 
-    public function isLiked($id)
-    {
-        return Like::where([
-            'user_id' => Auth::id(),
-            'comment_id' => $id
-        ])->get()->first()->liked === 1;
-    }
-
     public function dislike($id)
     {
         return $this->like($id, false);
+    }
+
+    public function isLiked($id)
+    {
+        return Like::where(['comment_id' => $id, 'user_id' => Auth::id()])->first()['liked'];
+    }
+
+    public function isDisliked($id)
+    {
+        return $this->isLiked($id) === 0;
     }
 
     public function likes()

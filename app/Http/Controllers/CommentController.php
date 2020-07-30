@@ -22,14 +22,14 @@ class CommentController extends Controller
         return redirect(route('post', request()->id))->with('message', 'Comment posted!');
     }
 
-    public function like(Comment $comment)
+    public function like($id, Comment $comment)
     {
-        return $comment->like(request()->id);
+        return $comment->like($id);
     }
 
     public function dislike(Comment $comment)
     {
-        return $comment->dislike(request()->id);
+        $comment->dislike(request()->id);
     }
 
     protected function validateComment()

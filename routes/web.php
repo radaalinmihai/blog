@@ -16,12 +16,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'PostController@index')->name('home');
 Route::get('/post/{id}', 'PostController@show')->name('post');
+Route::delete('/post{id}', 'PostController@destroy');
 
 Auth::routes();
 
 Route::get('/create', 'PostController@create')->name('create');
 Route::post('/', 'PostController@store');
-Route::post('/comment', 'CommentController@create');
+Route::delete('/post/{id}/delete', 'PostController@destroy');
 
+Route::post('/comment', 'CommentController@create');
 Route::post('/comment/{id}/like', 'CommentController@like');
 Route::delete('/comment/{id}/dislike', 'CommentController@dislike');

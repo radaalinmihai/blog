@@ -3,7 +3,13 @@
 @section('content')
     <div class="card mb-3">
         <div class="card-body">
-            <h5 class="card-title">{{ $post->title }}</h5>
+            <div class="d-flex flex-row justify-content-between">
+                <h5 class="card-title">{{ $post->title }}</h5>
+                <section class="d-flex flex-row">
+                    <span role="button" class="material-icons">create</span>
+                    <span type="button" role="button" class="material-icons" data-toggle="modal" data-target="#deletePost">delete</span>
+                </section>
+            </div>
             <h6 class="card-subtitle mb-2 text-muted">{{ $post->user->name }}</h6>
             <p class="card-text">{{ $post->body }}</p>
         </div>
@@ -21,9 +27,9 @@
                         <h5 class="mb-0">{{ $comment->user->name }}</h5>
                         <p class="mb-0">{{ $comment->body }}</p>
                         <div class="d-flex likes-container">
-                            <span onclick="like(event, {{ $comment->id }}, {{ $post->id }})" class="like {{ $comment->isLiked($comment->id) ? 'text-primary' : 'text-dark' }} material-icons">thumb_up</span>
+                            <span data-id-comment="{{ $comment->id }}" class="like {{ $comment->isLiked($comment->id) ? 'text-primary' : 'text-dark' }} material-icons">thumb_up</span>
                             <span class="likes">{{ $comment->likes ?: 0 }}</span>
-                            <span onclick="dislike(event, {{ $comment->id }}, {{ $post->id }})" class="dislike {{ !$comment->isLiked($comment->id) ? 'text-primary' : 'text-dark' }} material-icons">thumb_down</span>
+                            <span data-id-comment="{{ $comment->id }}" class="dislike {{ $comment->isDisliked($comment->id) ? 'text-primary' : 'text-dark' }} material-icons">thumb_down</span>
                         </div>
                     </div>
                 @empty
@@ -43,49 +49,65 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="deletePost" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Delete this post</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this post? This actions is not reversable.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <form action="/post/{{ $post->id }}/delete" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-primary">Yes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
     <script>
-        function like(event, id, post_id) {
-            event.preventDefault();
-            let data = new FormData();
-            data.append('_token', '{{ Session::token() }}');
-            data.append('id', id);
-            data.append('post_id', post_id);
-            fetch('/comment/' + id + '/like', {
-                method: 'POST',
-                body: data
-            }).then(function() {
-                let likes = document.getElementsByClassName('likes')[id - 1],
-                    dislikeButton = document.getElementsByClassName('dislike')[id - 1];
-                event.target.classList.add('text-primary');
-                event.target.classList.remove('text-dark');
-                likes.innerText = parseInt(likes.innerText) + 1;
-                dislikeButton.classList.add('text-dark');
-                dislikeButton.classList.remove('text-primary');
-            });
-        }
+        let likes = document.getElementsByClassName('likes');
 
-        function dislike(event, id, post_id) {
+        $('.like').click(function(event) {
             event.preventDefault();
-            let data = new FormData();
-            data.append('_token', '{{ Session::token() }}');
-            data.append('_method', 'DELETE');
-            data.append('id', id);
-            data.append('post_id', post_id);
-            fetch('/comment/' + id + '/dislike', {
-                method: 'POST',
-                body: data
+            let id = $(this).attr('data-id-comment'),
+                elId = $(this).index(this);
+            axios.post('/comment/' + id + '/like')
+                .then(function() {
+                    let dislikeButton = document.getElementsByClassName('dislike')[elId];
+                    event.target.classList.add('text-primary');
+                    event.target.classList.remove('text-dark');
+                    likes[elId].innerText = parseInt(likes[elId].innerText) + 1;
+                    dislikeButton.classList.add('text-dark');
+                    dislikeButton.classList.remove('text-primary');
+                });
+        });
+
+        $('.dislike').click(function(event) {
+            event.preventDefault();
+            let id = $(this).attr('data-id-comment'),
+                elId = $(this).index(this);
+            axios.post('/comment/' + id + '/dislike', {
+                _method: 'DELETE',
             }).then(function() {
-                let likes = document.getElementsByClassName('likes')[id - 1],
-                    likeButton = document.getElementsByClassName('like')[id - 1];
+                let likeButton = document.getElementsByClassName('like')[elId];
                 event.target.classList.add('text-primary');
                 event.target.classList.remove('text-dark');
-                likes.innerText = parseInt(likes.innerText) - 1;
+                if(parseInt(likes[elId].innerText) > 0)
+                    likes[elId].innerText = parseInt(likes[elId].innerText) - 1;
                 likeButton.classList.add('text-dark');
                 likeButton.classList.remove('text-primary');
             });
-        }
+        });
     </script>
 @endsection
