@@ -20,3 +20,9 @@
         <button type="submit" class="btn btn-primary">Post</button>
     </form>
 @endsection
+
+@section('scripts')
+    <script>
+        let textEditor = new EasyMDE();
+    </script>
+@endsection

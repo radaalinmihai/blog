@@ -116,4 +116,5 @@
             });
         });
     </script>
+    <script src="{{ asset('js/parseBody.js') }}"></script>
 @endsection

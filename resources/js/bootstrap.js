@@ -10,6 +10,8 @@ try {
     window.Popper = require('popper.js').default;
     window.$ = window.jQuery = require('jquery');
     window._ = require('material-icons');
+    window.EasyMDE = require('easymde');
+    window.marked = require('marked');
 
     require('bootstrap');
 } catch (e) {}

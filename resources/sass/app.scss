@@ -7,6 +7,9 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+// EasyMDE
+@import '~easymde/dist/easymde.min.css';
+
 .likes-container span {
   margin-left: 2%;
   &:first-of-type {

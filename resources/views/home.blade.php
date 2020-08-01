@@ -24,3 +24,7 @@
     </div>
 </div>
 @endsection
+
+@section('scripts')
+    <script src="{{ asset('js/parseBody.js') }}"></script>
+@endsection
